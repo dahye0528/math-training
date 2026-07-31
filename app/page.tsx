@@ -38,9 +38,9 @@ export default function Home() {
         {/* 대형 환영 문구 */}
         <h1 className="text-4xl md:text-6xl font-extrabold text-slate-800 leading-tight mb-6 drop-shadow-sm">
           <span className="bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-            나만의 수학교실
+            반송아이들과 함께하는
           </span>{" "}
-          만들기
+          수학수업
         </h1>
 
         {/* 간단한 설명 */}
