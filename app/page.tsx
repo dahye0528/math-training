@@ -1,4 +1,5 @@
 import { Sparkles, Heart, Compass, Plus, Star, BookOpen, Smile } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -59,13 +60,13 @@ export default function Home() {
 
         {/* 기능 소개 카드 (파스텔 솜사탕 컨셉) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-16">
-          <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-pink-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
+          <Link href="/games/coordinate" className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-pink-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
             <div className="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center mb-4">
               <Compass className="w-8 h-8 text-pink-400" />
             </div>
             <h3 className="text-2xl font-bold text-slate-700 mb-2">보물 좌표 찾기</h3>
             <p className="text-slate-500">지도에서 숨겨진 보물의 위치를 찾아봐요</p>
-          </div>
+          </Link>
 
           <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-blue-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
             <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
