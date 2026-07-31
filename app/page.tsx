@@ -1,4 +1,4 @@
-import { Sparkles, Heart, Compass, Plus, Star, BookOpen, Smile } from "lucide-react";
+import { Sparkles, Heart, Compass, Plus, Star, BookOpen, Smile, Bot } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -68,13 +68,13 @@ export default function Home() {
             <p className="text-slate-500">지도에서 숨겨진 보물의 위치를 찾아봐요</p>
           </Link>
 
-          <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-blue-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
+          <Link href="/chatbot" className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-blue-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
             <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-4">
-              <BookOpen className="w-8 h-8 text-blue-400" />
+              <Bot className="w-8 h-8 text-blue-400" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-700 mb-2">모양 도형 탐험</h3>
-            <p className="text-slate-500">동그라미, 세모, 네모 친구들을 만나요</p>
-          </div>
+            <h3 className="text-2xl font-bold text-slate-700 mb-2">AI 다혜쌤에게 질문</h3>
+            <p className="text-slate-500">궁금한 수학 문제는 챗봇에게 물어봐요</p>
+          </Link>
 
           <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-emerald-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
