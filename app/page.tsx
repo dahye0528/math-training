@@ -1,4 +1,4 @@
-import { Sparkles, Heart, Compass, Plus, Star, BookOpen, Smile, Bot } from "lucide-react";
+import { Sparkles, Heart, Compass, Star, Smile, Bot } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -16,15 +16,15 @@ export default function Home() {
         </div>
 
         <nav className="hidden md:flex items-center gap-4 bg-white/80 backdrop-blur-md px-6 py-3 rounded-full shadow-lg shadow-blue-100/50">
-          <button className="px-5 py-2 rounded-full text-slate-600 hover:text-pink-500 hover:bg-pink-50 transition-colors font-medium">
+          <Link href="/" className="px-5 py-2 rounded-full text-slate-600 hover:text-pink-500 hover:bg-pink-50 transition-colors font-medium">
             홈
-          </button>
-          <button className="px-5 py-2 rounded-full text-slate-600 hover:text-blue-500 hover:bg-blue-50 transition-colors font-medium">
+          </Link>
+          <Link href="/games/coordinate" className="px-5 py-2 rounded-full text-slate-600 hover:text-blue-500 hover:bg-blue-50 transition-colors font-medium">
             학습하기
-          </button>
-          <button className="px-5 py-2 rounded-full text-slate-600 hover:text-emerald-500 hover:bg-emerald-50 transition-colors font-medium">
+          </Link>
+          <Link href="/stickers" className="px-5 py-2 rounded-full text-slate-600 hover:text-emerald-500 hover:bg-emerald-50 transition-colors font-medium">
             칭찬 스티커판
-          </button>
+          </Link>
         </nav>
       </header>
 
@@ -50,16 +50,8 @@ export default function Home() {
           숫자 놀이부터 도형 탐험까지 함께 시작해 볼까요?
         </p>
 
-        {/* 기능 추가용 가짜(Placeholder) 버튼 */}
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <button className="px-8 py-4 rounded-full bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 text-white text-xl font-bold shadow-xl shadow-pink-200/80 hover:scale-105 transition-transform duration-200 active:scale-95 flex items-center gap-3">
-            <Plus className="w-6 h-6 stroke-[3]" />
-            새로운 수학 게임 추가하기
-          </button>
-        </div>
-
         {/* 기능 소개 카드 (파스텔 솜사탕 컨셉) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-6">
           <Link href="/games/coordinate" className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-pink-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
             <div className="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center mb-4">
               <Compass className="w-8 h-8 text-pink-400" />
@@ -80,8 +72,8 @@ export default function Home() {
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
               <Smile className="w-8 h-8 text-emerald-400" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-700 mb-2">칭찬 참 잘했어요</h3>
-            <p className="text-slate-500">매일 참 잘했어요 스티커를 모아보세요</p>
+            <h3 className="text-2xl font-bold text-slate-700 mb-2">나의 수학시간 참여도</h3>
+            <p className="text-slate-500">발표·인성·열공 스티커를 모아보세요</p>
           </Link>
         </div>
       </main>

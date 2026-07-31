@@ -21,7 +21,10 @@ export default function ClassPage({ params }: PageProps) {
 
   useEffect(() => {
     const fetchCounts = async () => {
-      if (!supabase) return;
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       const { data, error } = await supabase
         .from("stickers")
         .select("student_id, sticker_type")

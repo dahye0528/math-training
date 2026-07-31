@@ -81,7 +81,10 @@ export default function StudentPage({ params }: PageProps) {
   const [adding, setAdding] = useState<StickerType | null>(null);
 
   const fetchStickers = useCallback(async () => {
-    if (!supabase) return;
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
     const { data, error } = await supabase
       .from("stickers")
       .select("*")
