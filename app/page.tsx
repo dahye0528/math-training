@@ -68,7 +68,7 @@ export default function Home() {
             <p className="text-slate-500">궁금한 수학 문제는 챗봇에게 물어봐요</p>
           </Link>
 
-          <Link href="/stickers" className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-emerald-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
+          <Link href="/stickers/auth" className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-emerald-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
               <Smile className="w-8 h-8 text-emerald-400" />
             </div>

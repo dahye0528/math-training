@@ -76,15 +76,16 @@ const STAMP_POSITIONS = [
 
 export default function StudentPage({ params }: PageProps) {
   const { classId, studentId } = use(params);
+  const [isTeacher, setIsTeacher] = useState(false);
+
+  useEffect(() => {
+    const flag = localStorage.getItem('isTeacher') === 'true';
+    setIsTeacher(flag);
+  }, []);
+
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState<StickerType | null>(null);
-
-  const fetchStickers = useCallback(async () => {
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
     const { data, error } = await supabase
       .from("stickers")
       .select("*")
@@ -221,7 +222,7 @@ export default function StudentPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Add Sticker Buttons */}
+{isTeacher && (<>/* Add Sticker Buttons */}
         <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl p-6">
           <h2 className="text-center font-bold text-slate-600 mb-5 text-lg">도장 찍어주기! 💮</h2>
           <div className="grid grid-cols-3 gap-4">
@@ -249,6 +250,7 @@ export default function StudentPage({ params }: PageProps) {
             })}
           </div>
         </div>
+        </>) }
       </main>
     </div>
   );
