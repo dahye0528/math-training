@@ -116,53 +116,83 @@ export default function CoordinateGame() {
     }
   };
 
-  // Helper to render the 11x11 grid (-5 to 5)
+  // Helper to render the grid with proper intersections
   const renderGrid = (interactive: boolean) => {
-    const cells = [];
-    for (let y = 5; y >= -5; y--) {
-      for (let x = -5; x <= 5; x++) {
-        const isTarget = phase === "phase1" && targetPoint.x === x && targetPoint.y === y;
-        const isAxisX = y === 0;
-        const isAxisY = x === 0;
+    const MIN = -5;
+    const MAX = 5;
+    const range = MAX - MIN;
 
-        cells.push(
+    const getLeftPercent = (x: number) => ((x - MIN) / range) * 100;
+    const getTopPercent = (y: number) => (1 - ((y - MIN) / range)) * 100;
+
+    const lines = [];
+    const intersections = [];
+
+    // Draw lines
+    for (let i = MIN; i <= MAX; i++) {
+      const posPercent = getLeftPercent(i);
+      
+      // Vertical line (x = i)
+      lines.push(
+        <div 
+          key={`v-${i}`} 
+          className={`absolute top-0 bottom-0 ${i === 0 ? 'bg-slate-800 w-[2px] z-10 -ml-[1px]' : 'bg-slate-200 w-[1px]'}`}
+          style={{ left: `${posPercent}%` }}
+        >
+          {i !== 0 && <span className="absolute -bottom-6 -ml-2 text-xs font-medium text-slate-500">{i}</span>}
+          {i === 0 && <span className="absolute -bottom-6 ml-2 text-xs font-bold text-slate-800">x축</span>}
+        </div>
+      );
+      
+      // Horizontal line (y = i)
+      lines.push(
+        <div 
+          key={`h-${i}`} 
+          className={`absolute left-0 right-0 ${i === 0 ? 'bg-slate-800 h-[2px] z-10 -mt-[1px]' : 'bg-slate-200 h-[1px]'}`}
+          style={{ top: `${getTopPercent(i)}%` }}
+        >
+          {i !== 0 && <span className="absolute -left-6 -mt-2 text-xs font-medium text-slate-500">{i}</span>}
+          {i === 0 && <span className="absolute -top-6 ml-2 text-xs font-bold text-slate-800">y축</span>}
+        </div>
+      );
+    }
+
+    // Draw clickable intersections
+    for (let x = MIN; x <= MAX; x++) {
+      for (let y = MIN; y <= MAX; y++) {
+        const isTarget = phase === "phase1" && targetPoint.x === x && targetPoint.y === y;
+        const isFeedback = phase === "phase2" && feedback === "incorrect" && targetPoint.x === x && targetPoint.y === y;
+        
+        intersections.push(
           <div
-            key={`${x},${y}`}
+            key={`p-${x}-${y}`}
             onClick={() => interactive && handleGridClick(x, y)}
-            className={`
-              relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 border border-slate-200
-              ${isAxisX ? "border-b-2 border-b-slate-800" : ""}
-              ${isAxisY ? "border-r-2 border-r-slate-800" : ""}
-              ${interactive ? "cursor-pointer hover:bg-pink-100 transition-colors" : ""}
-            `}
+            className={`absolute w-8 h-8 -ml-4 -mt-4 rounded-full flex items-center justify-center z-20 ${interactive ? 'cursor-pointer hover:bg-pink-400/30' : ''}`}
+            style={{ left: `${getLeftPercent(x)}%`, top: `${getTopPercent(y)}%` }}
           >
             {isTarget && (
-              <div className="absolute w-4 h-4 bg-pink-500 rounded-full shadow-lg animate-bounce" />
+              <div className="w-5 h-5 bg-pink-500 rounded-full shadow-lg shadow-pink-500/50 animate-bounce" />
             )}
-            
-            {/* Show feedback point in phase 2 if incorrect */}
-            {phase === "phase2" && feedback === "incorrect" && targetPoint.x === x && targetPoint.y === y && (
-              <div className="absolute w-4 h-4 bg-emerald-500 rounded-full shadow-lg" />
+            {isFeedback && (
+              <div className="w-5 h-5 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50 animate-ping" />
             )}
-            
-            {/* Axis Labels */}
-            {y === -5 && isAxisY && <span className="absolute -bottom-6 text-xs font-bold">-5</span>}
-            {y === 5 && isAxisY && <span className="absolute -top-6 text-xs font-bold">5</span>}
-            {x === -5 && isAxisX && <span className="absolute -left-6 text-xs font-bold">-5</span>}
-            {x === 5 && isAxisX && <span className="absolute -right-6 text-xs font-bold">5</span>}
-            {x === 0 && y === 0 && <span className="absolute -bottom-5 -left-5 text-xs font-bold">0</span>}
+            {/* Show point in phase 2 if correct */}
+            {phase === "phase2" && feedback === "correct" && targetPoint.x === x && targetPoint.y === y && (
+              <div className="w-5 h-5 bg-pink-500 rounded-full shadow-lg shadow-pink-500/50" />
+            )}
           </div>
         );
       }
     }
 
     return (
-      <div className="relative inline-grid grid-cols-11 bg-white p-6 rounded-3xl shadow-xl shadow-blue-100/50 my-8">
-        {cells}
-        
-        {/* Axes Labels */}
-        <div className="absolute top-2 right-2 text-sm font-bold text-slate-800">x축</div>
-        <div className="absolute top-2 left-1/2 ml-4 text-sm font-bold text-slate-800">y축</div>
+      <div className="relative w-full max-w-[400px] aspect-square bg-white rounded-xl shadow-xl shadow-blue-100/50 my-10 border border-slate-100">
+        <div className="absolute inset-10">
+           {lines}
+           {intersections}
+           {/* Origin label */}
+           <span className="absolute ml-2 mt-2 text-xs font-bold text-slate-800 z-30" style={{ left: '50%', top: '50%' }}>0</span>
+        </div>
       </div>
     );
   };
