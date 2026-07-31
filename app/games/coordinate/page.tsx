@@ -23,26 +23,35 @@ export default function CoordinateGame() {
   const [studentName, setStudentName] = useState("");
   const [rankings, setRankings] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [startTime, setStartTime] = useState<number>(0);
 
   const TOTAL_QUESTIONS_PER_PHASE = 5;
 
   const generateRandomPoint = () => {
-    // Generate between -5 and 5
     const x = Math.floor(Math.random() * 11) - 5;
     const y = Math.floor(Math.random() * 11) - 5;
     return { x, y };
   };
 
   const startGame = () => {
+    if (!studentName.trim()) return;
     setScore(0);
     setCurrentQuestion(1);
     setTargetPoint(generateRandomPoint());
+    setStartTime(Date.now());
     setPhase("phase1");
+  };
+
+  const calculatePoints = () => {
+    const timeTaken = Date.now() - startTime;
+    // Base 50 points + up to 50 speed points (0s = 50pts, 10s = 0pts)
+    const speedBonus = Math.max(0, 50 - Math.floor(timeTaken / 200)); 
+    return 50 + speedBonus;
   };
 
   const handlePhase1Submit = () => {
     if (parseInt(userX) === targetPoint.x && parseInt(userY) === targetPoint.y) {
-      setScore((s) => s + 10);
+      setScore((s) => s + calculatePoints());
       setFeedback("correct");
     } else {
       setFeedback("incorrect");
@@ -52,6 +61,8 @@ export default function CoordinateGame() {
       setFeedback(null);
       setUserX("");
       setUserY("");
+      setStartTime(Date.now()); // Reset timer
+      
       if (currentQuestion < TOTAL_QUESTIONS_PER_PHASE) {
         setCurrentQuestion((q) => q + 1);
         setTargetPoint(generateRandomPoint());
@@ -66,8 +77,10 @@ export default function CoordinateGame() {
   const handleGridClick = (clickedX: number, clickedY: number) => {
     if (phase !== "phase2" || feedback !== null) return;
 
+    let pointsGained = 0;
     if (clickedX === targetPoint.x && clickedY === targetPoint.y) {
-      setScore((s) => s + 10);
+      pointsGained = calculatePoints();
+      setScore((s) => s + pointsGained);
       setFeedback("correct");
     } else {
       setFeedback("incorrect");
@@ -75,24 +88,27 @@ export default function CoordinateGame() {
 
     setTimeout(() => {
       setFeedback(null);
+      setStartTime(Date.now()); // Reset timer
+
       if (currentQuestion < TOTAL_QUESTIONS_PER_PHASE) {
         setCurrentQuestion((q) => q + 1);
         setTargetPoint(generateRandomPoint());
       } else {
+        const finalScore = score + pointsGained;
         setPhase("result");
+        submitScoreFinal(finalScore);
       }
     }, 1500);
   };
 
-  const submitScore = async () => {
+  const submitScoreFinal = async (finalScore: number) => {
     if (!studentName.trim() || !supabase) return;
     setIsSubmitting(true);
     
     try {
       await supabase.from("coordinate_game_rankings").insert([
-        { student_name: studentName, score: score }
+        { student_name: studentName, score: finalScore }
       ]);
-      fetchRankings();
     } catch (error) {
       console.error("Error submitting score:", error);
     } finally {
@@ -139,8 +155,7 @@ export default function CoordinateGame() {
           className={`absolute top-0 bottom-0 ${i === 0 ? 'bg-slate-800 w-[2px] z-10 -ml-[1px]' : 'bg-slate-200 w-[1px]'}`}
           style={{ left: `${posPercent}%` }}
         >
-          {i !== 0 && <span className="absolute -bottom-6 -ml-2 text-xs font-medium text-slate-500">{i}</span>}
-          {i === 0 && <span className="absolute -bottom-6 ml-2 text-xs font-bold text-slate-800">x축</span>}
+          {i === 0 && <span className="absolute -top-8 -ml-[10px] text-sm font-bold text-slate-800">y축</span>}
         </div>
       );
       
@@ -151,10 +166,35 @@ export default function CoordinateGame() {
           className={`absolute left-0 right-0 ${i === 0 ? 'bg-slate-800 h-[2px] z-10 -mt-[1px]' : 'bg-slate-200 h-[1px]'}`}
           style={{ top: `${getTopPercent(i)}%` }}
         >
-          {i !== 0 && <span className="absolute -left-6 -mt-2 text-xs font-medium text-slate-500">{i}</span>}
-          {i === 0 && <span className="absolute -top-6 ml-2 text-xs font-bold text-slate-800">y축</span>}
+          {i === 0 && <span className="absolute -right-10 -mt-[10px] text-sm font-bold text-slate-800">x축</span>}
         </div>
       );
+    }
+
+    // Draw numbers along axes
+    for (let i = MIN; i <= MAX; i++) {
+      if (i !== 0) {
+        // x-axis numbers (y=0) -> left: i, top: 0
+        intersections.push(
+          <span
+            key={`xlabel-${i}`}
+            className="absolute text-xs font-bold text-slate-700 -ml-1 mt-2 z-10"
+            style={{ left: `${getLeftPercent(i)}%`, top: `${getTopPercent(0)}%` }}
+          >
+            {i}
+          </span>
+        );
+        // y-axis numbers (x=0) -> left: 0, top: i
+        intersections.push(
+          <span
+            key={`ylabel-${i}`}
+            className="absolute text-xs font-bold text-slate-700 -ml-5 -mt-2 z-10 text-right w-4"
+            style={{ left: `${getLeftPercent(0)}%`, top: `${getTopPercent(i)}%` }}
+          >
+            {i}
+          </span>
+        );
+      }
     }
 
     // Draw clickable intersections
@@ -191,7 +231,7 @@ export default function CoordinateGame() {
            {lines}
            {intersections}
            {/* Origin label */}
-           <span className="absolute ml-2 mt-2 text-xs font-bold text-slate-800 z-30" style={{ left: '50%', top: '50%' }}>0</span>
+           <span className="absolute -ml-3 mt-1 text-xs font-bold text-slate-800 z-30" style={{ left: '50%', top: '50%' }}>0</span>
         </div>
       </div>
     );
@@ -206,7 +246,7 @@ export default function CoordinateGame() {
         </Link>
         {phase !== "intro" && phase !== "ranking" && (
           <div className="bg-white/90 px-6 py-2 rounded-full shadow-md font-bold text-xl text-blue-500">
-            점수: {score} / 100
+            점수: {score} / 1000
           </div>
         )}
       </header>
@@ -219,15 +259,27 @@ export default function CoordinateGame() {
               보물 좌표 찾기 게임! 🗺️
             </h1>
             <p className="text-xl text-slate-600 mb-4">
-              중학교 1학년 수학: 좌표평면과 그래프 단원
+              중학교 1학년 수학: 빨리 맞출수록 점수가 팍팍 올라가요!
             </p>
             <ul className="text-left bg-slate-50 p-6 rounded-2xl mb-8 space-y-3">
               <li>📍 <strong>1단계:</strong> 찍혀있는 점을 보고 (x, y) 좌표를 맞춰보세요! (5문제)</li>
               <li>🎯 <strong>2단계:</strong> 주어진 (x, y) 좌표를 보고 정확한 위치를 클릭하세요! (5문제)</li>
             </ul>
+
+            <div className="mb-6 flex flex-col items-center gap-4">
+              <input 
+                type="text" 
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="도전자 이름을 입력하세요"
+                className="w-full max-w-md px-6 py-4 rounded-full border-2 border-pink-200 focus:border-pink-500 outline-none text-xl text-center"
+              />
+            </div>
+
             <button 
               onClick={startGame}
-              className="px-10 py-4 bg-gradient-to-r from-pink-400 to-pink-500 text-white rounded-full text-2xl font-bold hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-pink-300"
+              disabled={!studentName.trim()}
+              className="px-10 py-4 bg-gradient-to-r from-pink-400 to-pink-500 text-white rounded-full text-2xl font-bold hover:scale-105 active:scale-95 transition-transform shadow-lg shadow-pink-300 disabled:opacity-50 disabled:hover:scale-100"
             >
               게임 시작하기!
             </button>
@@ -309,34 +361,23 @@ export default function CoordinateGame() {
               최종 점수: <span className="text-pink-500 font-bold text-5xl ml-2">{score}</span> 점
             </p>
             
-            {!supabase ? (
-              <div className="text-rose-500 font-medium p-4 bg-rose-50 rounded-xl w-full mb-4">
-                Supabase 연동이 설정되지 않아 랭킹을 저장할 수 없습니다. .env.local 파일을 확인해 주세요.
-              </div>
-            ) : (
-              <div className="w-full flex flex-col gap-4">
-                <input 
-                  type="text" 
-                  value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
-                  placeholder="이름을 입력하세요"
-                  className="w-full px-6 py-4 rounded-full border-2 border-blue-200 focus:border-blue-500 outline-none text-xl text-center"
-                />
-                <button 
-                  onClick={submitScore}
-                  disabled={isSubmitting || !studentName.trim()}
-                  className="w-full py-4 bg-blue-500 text-white rounded-full text-xl font-bold hover:bg-blue-600 disabled:opacity-50 transition-colors"
-                >
-                  {isSubmitting ? "저장 중..." : "명예의 전당 등록하기!"}
-                </button>
-              </div>
-            )}
+            <div className="text-emerald-600 font-bold text-lg mb-8 bg-emerald-50 px-6 py-3 rounded-full flex items-center gap-2">
+              <CheckCircle2 className="w-6 h-6" />
+              명예의 전당에 점수가 등록되었습니다!
+            </div>
             
             <button 
-              onClick={startGame}
-              className="mt-4 px-8 py-3 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+              onClick={fetchRankings}
+              className="w-full py-4 bg-blue-500 text-white rounded-full text-xl font-bold hover:bg-blue-600 transition-colors mb-4"
             >
-              다시 도전하기
+              명예의 전당 순위 보기
+            </button>
+
+            <button 
+              onClick={() => { setPhase("intro"); setStudentName(""); }}
+              className="w-full px-8 py-4 bg-slate-200 text-slate-700 rounded-full text-xl font-bold hover:bg-slate-300 transition-colors"
+            >
+              새로운 이름으로 재도전
             </button>
           </div>
         )}
@@ -367,10 +408,10 @@ export default function CoordinateGame() {
             </div>
             
             <button 
-              onClick={startGame}
-              className="mt-8 px-8 py-3 bg-slate-200 text-slate-700 rounded-full font-bold hover:bg-slate-300 transition-colors"
+              onClick={() => { setPhase("intro"); setStudentName(""); }}
+              className="mt-8 px-8 py-4 bg-slate-200 text-slate-700 rounded-full text-lg font-bold hover:bg-slate-300 transition-colors"
             >
-              다시 도전하기
+              새로운 게임 시작하기
             </button>
           </div>
         )}
