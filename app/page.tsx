@@ -76,13 +76,13 @@ export default function Home() {
             <p className="text-slate-500">궁금한 수학 문제는 챗봇에게 물어봐요</p>
           </Link>
 
-          <div className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-emerald-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
+          <Link href="/stickers" className="bg-white/90 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-emerald-100/60 flex flex-col items-center hover:scale-105 transition-transform duration-200">
             <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
               <Smile className="w-8 h-8 text-emerald-400" />
             </div>
             <h3 className="text-2xl font-bold text-slate-700 mb-2">칭찬 참 잘했어요</h3>
             <p className="text-slate-500">매일 참 잘했어요 스티커를 모아보세요</p>
-          </div>
+          </Link>
         </div>
       </main>
 
